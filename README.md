@@ -1,6 +1,12 @@
 # ftc_app
 FTC Android Studio project to create FTC Robot Controller app.
 
+This is a slightly modified version of the ftc_app to support FTC Team 7582 (Griffin Robotics). Since we are running legacy hardware, we modified FtcOpModeRegister.java to register NxtTeleOp with manager.register("NxtTeleOp", NxtTeleOp.class); and commented out all others except NullOp with manager.register("NullOp", NullOp.class);
+
+And we also included a different icon based on our cool logo...
+
+**************************************************************************************
+
 This is the FTC SDK that can be used to create an FTC Robot Controller app, with custom op modes.
 The FTC Robot Controller app is designed to work in conjunction with the FTC Driver Station app.
 The FTC Driver Station app is available through Google Play.
