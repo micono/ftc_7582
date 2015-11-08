@@ -72,12 +72,12 @@ public class NxtTeleOp extends OpMode {
    */
   @Override
   public void init() {
-    motorRight = hardwareMap.dcMotor.get("motor_2");
-    motorLeft = hardwareMap.dcMotor.get("motor_1");
+    motorRight = hardwareMap.dcMotor.get("motor_rt_rear");
+    motorLeft = hardwareMap.dcMotor.get("motor_lt_rear");
     claw = hardwareMap.servo.get("servo_6"); // channel 6
     wrist = hardwareMap.servo.get("servo_1"); // channel 1
 
-    wheelController = hardwareMap.dcMotorController.get("wheels");
+    wheelController = hardwareMap.dcMotorController.get("wheels_rear");
   }
 
   /*
@@ -89,8 +89,9 @@ public class NxtTeleOp extends OpMode {
 
     devMode = DcMotorController.DeviceMode.WRITE_ONLY;
 
+    /// only the motor on the right side runs in reverse
+    ///
     motorRight.setDirection(DcMotor.Direction.REVERSE);
-    //motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
     // set the mode
     // Nxt devices start up in "write" mode by default, so no need to switch device modes here.
@@ -133,8 +134,8 @@ public class NxtTeleOp extends OpMode {
       // direction: left_stick_x ranges from -1 to 1, where -1 is full left and 1 is full right
       float throttle = -gamepad1.left_stick_y;
       float direction = gamepad1.left_stick_x;
-      float right = throttle - direction;
-      float left = throttle + direction;
+      float right = throttle + direction; //throttle - direction;
+      float left = throttle - direction; //throttle + direction;
 
       // clip the right/left values so that the values never exceed +/- 1
       right = Range.clip(right, -1, 1);
@@ -222,7 +223,8 @@ public class NxtTeleOp extends OpMode {
       // using the USBDcMotorController, there is no need to switch, because USB can handle reads
       // and writes without changing modes. The NxtDcMotorControllers start up in "write" mode.
       // This method does nothing on USB devices, but is needed on Nxt devices.
-      wheelController.setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
+
+      syncSetMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
     }
 
     // Every 17 loops, switch to read mode so we can read data from the NXT device.
@@ -233,13 +235,22 @@ public class NxtTeleOp extends OpMode {
       telemetry.addData("Text", "free flow text");
       telemetry.addData("left motor", motorLeft.getPower());
       telemetry.addData("right motor", motorRight.getPower());
+
       telemetry.addData("RunMode: ", motorLeft.getMode().toString());
 
+      /// looks to me like setting the DeviceMode to WRITE_ONLY takes some time
+      /// this won't return until the transition is complete
+      ///
+      int delayms = syncSetMotorControllerDeviceMode(DcMotorController.DeviceMode.WRITE_ONLY);
+
+      telemetry.addData("Status OPL/Delay ", String.valueOf(numOpLoops) + " / " + String.valueOf(delayms));
+      // Reset the loop
+      // numOpLoops = 0;
       // Only needed on Nxt devices, but not on USB devices
-      wheelController.setMotorControllerDeviceMode(DcMotorController.DeviceMode.WRITE_ONLY);
+      //wheelController.setMotorControllerDeviceMode(DcMotorController.DeviceMode.WRITE_ONLY);
 
       // Reset the loop
-      numOpLoops = 0;
+      //numOpLoops = 0;
     }
 
     // Update the current devMode
@@ -250,5 +261,39 @@ public class NxtTeleOp extends OpMode {
   // If the device is in either of these two modes, the op mode is allowed to write to the HW.
   private boolean allowedToWrite(){
     return (devMode == DcMotorController.DeviceMode.WRITE_ONLY);
+  }
+
+  /// the DcMotorControllers take a while to switch modes. we can't afford to have
+  /// have the controller to switch from WRITE_ONLY to READ_ONLY in the middle of
+  /// move or (less importantly) switch from READ_ONLY to WRITE_ONLY in the middle
+  /// of gathering telemetry. Use this method to change the mode and not return until
+  /// the transition is done. It checks every 10ms for a transition
+  ///
+  private int syncSetMotorControllerDeviceMode(DcMotorController.DeviceMode newMode)
+  {
+    DcMotorController.DeviceMode devMode;
+    int delay = 0;
+
+    while (true)
+    {
+      wheelController.setMotorControllerDeviceMode(newMode);
+
+      /// sleep for 10ms and check
+      ///
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException e) {
+        /// sleep got interrupted - oh well
+        e.printStackTrace();
+      }
+      delay++;
+
+      devMode = wheelController.getMotorControllerDeviceMode();
+
+      if (devMode == newMode)
+      { break; }
+    }
+
+    return delay * 10;
   }
 }
