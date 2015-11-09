@@ -89,9 +89,9 @@ public class NxtTeleOp extends OpMode {
 
     devMode = DcMotorController.DeviceMode.WRITE_ONLY;
 
-    /// only the motor on the right side runs in reverse
+    /// only the motor on the left side runs in reverse
     ///
-    motorRight.setDirection(DcMotor.Direction.REVERSE);
+    motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
     // set the mode
     // Nxt devices start up in "write" mode by default, so no need to switch device modes here.
@@ -134,8 +134,8 @@ public class NxtTeleOp extends OpMode {
       // direction: left_stick_x ranges from -1 to 1, where -1 is full left and 1 is full right
       float throttle = -gamepad1.left_stick_y;
       float direction = gamepad1.left_stick_x;
-      float right = throttle + direction; //throttle - direction;
-      float left = throttle - direction; //throttle + direction;
+      float right = throttle - direction;
+      float left = throttle + direction;
 
       // clip the right/left values so that the values never exceed +/- 1
       right = Range.clip(right, -1, 1);
