@@ -85,8 +85,8 @@ public class FourWheelDriveOp extends OpMode {
     motorLeftFront = hardwareMap.dcMotor.get("motor_lt_front");
     motorLeftRear = hardwareMap.dcMotor.get("motor_lt_rear");
 
-    claw = hardwareMap.servo.get("servo_6"); // channel 6
-    wrist = hardwareMap.servo.get("servo_1"); // channel 1
+    claw = hardwareMap.servo.get("claw"); // channel 6
+    wrist = hardwareMap.servo.get("wrist"); // channel 1
 
     wheelControllerFront = hardwareMap.dcMotorController.get("wheels_front");
     wheelControllerRear = hardwareMap.dcMotorController.get("wheels_rear");
@@ -105,7 +105,7 @@ public class FourWheelDriveOp extends OpMode {
 
     /// only the motor on the left side runs in reverse
     ///
-    motorLeftFront.setDirection(DcMotor.Direction.REVERSE);;
+    motorLeftFront.setDirection(DcMotor.Direction.REVERSE);
     motorLeftRear.setDirection(DcMotor.Direction.REVERSE);
 
     // set the mode
