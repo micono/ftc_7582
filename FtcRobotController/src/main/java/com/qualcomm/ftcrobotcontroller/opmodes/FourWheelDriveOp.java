@@ -57,6 +57,11 @@ public class FourWheelDriveOp extends OpMode {
   // amount to change the wrist servo position by
   double wristDelta = 0.01;
 
+  // command for the continuous servo
+  double continuousPosition;
+  static double continuousStop = 0.5;
+  double continuousDelta = 0.25;
+
   DcMotorController.DeviceMode devMode;
   DcMotorController wheelControllerFront;
   DcMotorController wheelControllerRear;
@@ -67,6 +72,7 @@ public class FourWheelDriveOp extends OpMode {
 
   Servo claw;
   Servo wrist;
+  Servo continuous;
 
   int numOpLoops = 1;
 
@@ -87,6 +93,7 @@ public class FourWheelDriveOp extends OpMode {
 
     claw = hardwareMap.servo.get("claw"); // channel 6
     wrist = hardwareMap.servo.get("wrist"); // channel 1
+    continuous = hardwareMap.servo.get("continuous");
 
     wheelControllerFront = hardwareMap.dcMotorController.get("wheels_front");
     wheelControllerRear = hardwareMap.dcMotorController.get("wheels_rear");
@@ -117,6 +124,7 @@ public class FourWheelDriveOp extends OpMode {
 
     wristPosition = 0.6;
     clawPosition = 0.5;
+    continuousPosition = continuousStop;
   }
 
   /*
@@ -179,20 +187,30 @@ public class FourWheelDriveOp extends OpMode {
 
       // update the position of the claw
       if (gamepad1.x) {
+        continuousPosition -= continuousDelta;
         clawPosition -= clawDelta;
       }
 
       if (gamepad1.b) {
+        continuousPosition += continuousDelta;
         clawPosition += clawDelta;
       }
 
       // clip the position values so that they never exceed 0..1
       wristPosition = Range.clip(wristPosition, 0, 1);
       clawPosition = Range.clip(clawPosition, 0, 1);
+      continuousPosition = Range.clip(continuousPosition, 0, 1);
+
+      // if we get outside the interval
+      if (Math.abs(continuousPosition - continuousStop) < continuousDelta / 2.0)
+      {
+        continuousPosition = continuousStop;
+      }
 
       // write position values to the wrist and claw servo
       wrist.setPosition(wristPosition);
       claw.setPosition(clawPosition);
+      continuous.setPosition(continuousPosition);
 
     /*
      * Gamepad 2
