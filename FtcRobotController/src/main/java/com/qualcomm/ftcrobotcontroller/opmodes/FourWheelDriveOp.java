@@ -175,11 +175,11 @@ public class FourWheelDriveOp extends OpMode {
       motorLeftRear.setPower(left);
 
       //Continuous servo
-      if (gamepad1.y){
-        continuous.setPosition(0.0f);
-      } else if (gamepad1.a) {
+      if (gamepad1.b){
         continuous.setPosition(0.5f);
-      } else if (gamepad1.b){
+      } else if (gamepad1.y) {
+        continuous.setPosition(0.0f);
+      } else if (gamepad1.a){
         continuous.setPosition(1.0f);
       }
 
@@ -217,7 +217,6 @@ public class FourWheelDriveOp extends OpMode {
       // write position values to the wrist and claw servo
       wrist.setPosition(wristPosition);
       claw.setPosition(clawPosition);
-      continuous.setPosition(continuousPosition);
 
     /*
      * Gamepad 2
