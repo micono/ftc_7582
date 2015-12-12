@@ -60,7 +60,7 @@ public class FourWheelDriveOp extends OpMode {
   // command for the continuous servo
   double continuousPosition;
   static double continuousStop = 0.5;
-  double continuousDelta = 0.25;
+  double continuousDelta = 0.05;
 
   DcMotorController.DeviceMode devMode;
   DcMotorController wheelControllerFront;
@@ -277,11 +277,9 @@ public class FourWheelDriveOp extends OpMode {
 
       // Update the reads after some loops, when the command has successfully propagated through.
 
-      telemetry.addData("left front motor ", motorLeftFront.getPower());
-      telemetry.addData("right front motor", motorRightFront.getPower());
-      telemetry.addData("left rear motor  ", motorLeftRear.getPower());
-      telemetry.addData("right rear motor ", motorRightRear.getPower());
-
+      telemetry.addData("continuous ", continuousPosition);
+      telemetry.addData("front L/R  motor ", Double.toString(motorLeftFront.getPower()) + "/"+Double.toString(motorRightFront.getPower()));
+      telemetry.addData("rear L/R rear motor  ", Double.toString(motorLeftRear.getPower()) + "/" + motorRightRear.getPower());
       telemetry.addData("RunMode: ", motorLeftFront.getMode().toString());
 
       /// looks to me like setting the DeviceMode to WRITE_ONLY takes some time
