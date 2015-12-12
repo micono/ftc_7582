@@ -161,10 +161,8 @@ public class FourWheelDriveOp extends OpMode {
 
       // throttle:  left_stick_y ranges from -1 to 1, where -1 is full up,  and 1 is full down
       // direction: left_stick_x ranges from -1 to 1, where -1 is full left and 1 is full right
-      float throttle = -gamepad1.left_stick_y;
-      float direction = gamepad1.left_stick_x;
-      float right = throttle - direction;
-      float left = throttle + direction;
+      float right = -gamepad1.right_stick_y;
+      float left = -gamepad1.left_stick_y;
 
       // clip the right/left values so that the values never exceed +/- 1
       right = Range.clip(right, -1, 1);
@@ -176,25 +174,34 @@ public class FourWheelDriveOp extends OpMode {
       motorRightRear.setPower(right);
       motorLeftRear.setPower(left);
 
+      //Continuous servo
+      if (gamepad1.y){
+        continuous.setPosition(0.0f);
+      } else if (gamepad1.a) {
+        continuous.setPosition(0.5f);
+      } else if (gamepad1.b){
+        continuous.setPosition(1.0f);
+      }
+
       // update the position of the wrist
-      if (gamepad1.a) {
-        wristPosition -= wristDelta;
-      }
-
-      if (gamepad1.y) {
-        wristPosition += wristDelta;
-      }
-
-      // update the position of the claw
-      if (gamepad1.x) {
-        continuousPosition -= continuousDelta;
-        clawPosition -= clawDelta;
-      }
-
-      if (gamepad1.b) {
-        continuousPosition += continuousDelta;
-        clawPosition += clawDelta;
-      }
+//      if (gamepad1.a) {
+//        wristPosition -= wristDelta;
+//      }
+//
+//      if (gamepad1.y) {
+//        wristPosition += wristDelta;
+//      }
+//
+//      // update the position of the claw
+//      if (gamepad1.x) {
+//        continuousPosition -= continuousDelta;
+//        clawPosition -= clawDelta;
+//      }
+//
+//      if (gamepad1.b) {
+//        continuousPosition += continuousDelta;
+//        clawPosition += clawDelta;
+//      }
 
       // clip the position values so that they never exceed 0..1
       wristPosition = Range.clip(wristPosition, 0, 1);
