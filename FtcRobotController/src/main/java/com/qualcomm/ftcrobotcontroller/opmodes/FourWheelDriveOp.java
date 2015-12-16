@@ -45,6 +45,8 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class FourWheelDriveOp extends OpMode {
 
+  boolean twoButtons = true;
+
   // position of the claw servo
   double clawPosition;
 
@@ -174,13 +176,25 @@ public class FourWheelDriveOp extends OpMode {
       motorRightRear.setPower(right);
       motorLeftRear.setPower(left);
 
+      //
+
       //Continuous servo
-      if (gamepad1.b){
-        continuous.setPosition(0.5f);
-      } else if (gamepad1.y) {
-        continuous.setPosition(0.0f);
-      } else if (gamepad1.a){
-        continuous.setPosition(1.0f);
+      if (twoButtons) {
+          if (gamepad1.y) {
+            continuous.setPosition(1.0f);
+          } else if (gamepad1.x) {
+            continuous.setPosition(0.0f);
+          } else {
+            continuous.setPosition(0.5f);
+        }
+      } else {
+        if (gamepad1.b) {
+          continuous.setPosition(0.5f);
+        } else if (gamepad1.y) {
+          continuous.setPosition(0.0f);
+        } else if (gamepad1.a) {
+          continuous.setPosition(1.0f);
+        }
       }
 
       // update the position of the wrist
@@ -209,8 +223,7 @@ public class FourWheelDriveOp extends OpMode {
       continuousPosition = Range.clip(continuousPosition, 0, 1);
 
       // if we get outside the interval
-      if (Math.abs(continuousPosition - continuousStop) < continuousDelta / 2.0)
-      {
+      if (Math.abs(continuousPosition - continuousStop) < continuousDelta / 2.0) {
         continuousPosition = continuousStop;
       }
 
