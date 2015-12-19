@@ -47,6 +47,7 @@ public class FourWheelDriveOp extends OpMode {
 
   boolean twoButtons = true;
   boolean speedMode = true;
+  double time;
 
   // position of the claw servo
   double clawPosition;
@@ -345,6 +346,7 @@ public class FourWheelDriveOp extends OpMode {
       telemetry.addData("rear L/R rear motor  ", Double.toString(motorLeftRear.getPower()) + "/" + motorRightRear.getPower());
       telemetry.addData("RunMode: ", motorLeftFront.getMode().toString());
       telemetry.addData("SpeedMode", speedMode);
+//      telemetry.addData("LoopTime", getRuntime()-time);
 
       /// looks to me like setting the DeviceMode to WRITE_ONLY takes some time
       /// this won't return until the transition is complete
@@ -358,6 +360,7 @@ public class FourWheelDriveOp extends OpMode {
 
     // Update the current devMode
     devMode = wheelControllerFront.getMotorControllerDeviceMode();
+    time = getRuntime();
     numOpLoops++;
   }
 
