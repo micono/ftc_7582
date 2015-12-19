@@ -72,7 +72,10 @@ public class FourWheelDriveOp extends OpMode {
   DcMotor motorLeftFront;
   DcMotor motorRightRear;
   DcMotor motorLeftRear;
+  DcMotor rodMotor;
+  DcMotor dadMotor;
 
+  Servo dadTilt;
   Servo claw;
   Servo wrist;
   Servo continuous;
@@ -96,10 +99,14 @@ public class FourWheelDriveOp extends OpMode {
 
     claw = hardwareMap.servo.get("claw"); // channel 6
     wrist = hardwareMap.servo.get("wrist"); // channel 1
+    dadTilt = hardwareMap.servo.get("dad_tilt");
     continuous = hardwareMap.servo.get("continuous");
 
     wheelControllerFront = hardwareMap.dcMotorController.get("wheels_front");
     wheelControllerRear = hardwareMap.dcMotorController.get("wheels_rear");
+
+    rodMotor = hardwareMap.dcMotor.get("rod_motor");
+    dadMotor = hardwareMap.dcMotor.get("dad_motor");
 
     DbgLog.msg("Four Wheel Drive Initialized");
   }
@@ -147,6 +154,7 @@ public class FourWheelDriveOp extends OpMode {
      * x, y buttons
      */
 
+      //Gamepad 1: Driver
       if (gamepad1.dpad_left) {
         // Nxt devices start up in "write" mode by default, so no need to switch modes here.
         motorLeftFront.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
@@ -214,6 +222,24 @@ public class FourWheelDriveOp extends OpMode {
           }
         }
       }
+
+      //Gamepad 2: Operator
+      if (gamepad2.dpad_up){
+        dadMotor.setPower(0.25);
+      } else if (gamepad2.dpad_down){
+        dadMotor.setPower(-0.25);
+      }
+
+      if (gamepad2.a){
+        dadTilt.setPosition(90);
+      } else if (gamepad2.x){
+        dadTilt.setPosition(0);
+      } else if (gamepad2.y){
+        dadTilt.setPosition(180);
+      }
+
+      float rodspeed = (-gamepad2.left_stick_y);
+      rodMotor.setPower(rodspeed);
 
       // update the position of the wrist
 //      if (gamepad1.a) {
