@@ -46,6 +46,7 @@ import com.qualcomm.robotcore.util.Range;
 public class FourWheelDriveOp extends OpMode {
 
   boolean twoButtons = true;
+  boolean speedMode = true;
 
   // position of the claw servo
   double clawPosition;
@@ -170,6 +171,11 @@ public class FourWheelDriveOp extends OpMode {
       right = Range.clip(right, -1, 1);
       left = Range.clip(left, -1, 1);
 
+      if (!speedMode) {
+        right *= 0.125;
+        left *= 0.125;
+      }
+
       // write the values to the motors
       motorRightFront.setPower(right);
       motorLeftFront.setPower(left);
@@ -180,12 +186,12 @@ public class FourWheelDriveOp extends OpMode {
 
       //Continuous servo
       if (twoButtons) {
-          if (gamepad1.y) {
-            continuous.setPosition(1.0f);
-          } else if (gamepad1.x) {
-            continuous.setPosition(0.0f);
-          } else {
-            continuous.setPosition(0.5f);
+        if (gamepad1.y) {
+          continuous.setPosition(1.0f);
+        } else if (gamepad1.x) {
+          continuous.setPosition(0.0f);
+        } else {
+          continuous.setPosition(0.5f);
         }
       } else {
         if (gamepad1.b) {
@@ -194,6 +200,18 @@ public class FourWheelDriveOp extends OpMode {
           continuous.setPosition(0.0f);
         } else if (gamepad1.a) {
           continuous.setPosition(1.0f);
+        }
+      }
+
+      if (numOpLoops % 25 == 0) {
+        if (twoButtons) {
+          if (gamepad1.b) {
+            speedMode = !speedMode;
+          }
+        } else {
+          if (gamepad1.x) {
+            speedMode = !speedMode;
+          }
         }
       }
 
@@ -300,6 +318,7 @@ public class FourWheelDriveOp extends OpMode {
       telemetry.addData("front L/R  motor ", Double.toString(motorLeftFront.getPower()) + "/"+Double.toString(motorRightFront.getPower()));
       telemetry.addData("rear L/R rear motor  ", Double.toString(motorLeftRear.getPower()) + "/" + motorRightRear.getPower());
       telemetry.addData("RunMode: ", motorLeftFront.getMode().toString());
+      telemetry.addData("SpeedMode", speedMode);
 
       /// looks to me like setting the DeviceMode to WRITE_ONLY takes some time
       /// this won't return until the transition is complete
